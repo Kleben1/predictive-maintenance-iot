@@ -3,7 +3,7 @@ import random
 import json
 import os  
 import requests
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Grap api url via environment variable
 API_URL = os.getenv("API_URL", "http://127.0.0.1:8000/predict")
@@ -16,7 +16,7 @@ def generate_sensor_data(machine_id="MACHINE_001"):
     """
     
     # Timestamp generation in ISO format
-    timestamp = datetime.utcnow().isoformat()
+    timestamp = datetime.now(timezone.utc).isoformat()
 
     #Anomaly probability (10%)
     is_anomaly = random.random() < 0.10
