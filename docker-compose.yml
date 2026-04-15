@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+	api:
+		build:
+			context: ./api
+		ports:
+			- "8000:8000"
+		environnement:
+			- ENV = development
+		networks:
+			-iot-network
+
+	dashboard:
+		build:
+			context: ./dashboard
+		ports:
+			- "8501:8501"
+		depends_on:
+			- api
+		networks:
+			- iot-network
+
+	networks:
+		iot-network:
+			driver: bridge
