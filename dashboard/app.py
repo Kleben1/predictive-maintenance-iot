@@ -3,6 +3,7 @@ import pandas as pd
 import requests
 import plotly.graph_objects as go 
 import time
+import os
 
 # Page configuration
 st.set_page_config(
@@ -11,7 +12,7 @@ st.set_page_config(
     layout="wide"
 )
 
-API_URL = "http://127.0.0.1:8000/history"
+API_URL = os.getenv("API_URL", "http://127.0.0.1:8000/history")
 
 def fetch_data():
     try:

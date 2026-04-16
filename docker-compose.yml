@@ -1,26 +1,31 @@
 version: '3.8'
 
 services:
-	api:
-		build:
-			context: ./api
-		ports:
-			- "8000:8000"
-		environnement:
-			- ENV = development
-		networks:
-			-iot-network
+  # BACKEND
+  api:
+    build: ./api
+    container_name: factory_api
+    ports:
+      - "8000:8000"
 
-	dashboard:
-		build:
-			context: ./dashboard
-		ports:
-			- "8501:8501"
-		depends_on:
-			- api
-		networks:
-			- iot-network
+  # DATA GENERATOR
+  simulator:
+    build: ./simulator
+    container_name: factory_simulator
+    depends_on:
+      - api
+    environment:
+      # SIMULATOR TO API
+      - API_URL=http://api:8000/predict
 
-	networks:
-		iot-network:
-			driver: bridge
+  # DASHBOARD
+  dashboard:
+    build: ./dashboard
+    container_name: factory_dashboard
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
+    environment:
+      # DASHBOARD TO API
+      - API_URL=http://api:8000/history

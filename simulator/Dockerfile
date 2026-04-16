@@ -1,8 +1,6 @@
 # simulator/Dockerfile
-FROM python:3.10-slim
+FROM python:3.13-slim
 WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
-# Auto Script
+RUN pip install requests
+COPY sensor_simulator.py .
 CMD ["python", "sensor_simulator.py"]
