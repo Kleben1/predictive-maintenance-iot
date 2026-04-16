@@ -11,4 +11,5 @@ class PredictionRecord(database.Base):
     temperature = Column(Float)
     vibration = Column(Float)
     is_anomaly = Column(Boolean)
+    reason = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.now(timezone.utc))

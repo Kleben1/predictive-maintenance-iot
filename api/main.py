@@ -72,49 +72,37 @@ def predict_anomaly_and_store(data: SensorData, db: Session = Depends(get_db)):
     else:
         is_anomaly = data.temperature > 80.0 or data.vibration > 4.0
 
+    # Determine the reason for the anomaly
+    reason_text = None
+    
+    if is_anomaly:
+        reasons = []
+        if data.temperature > 60.0: reasons.append("Overheating")
+        elif data.temperature < 30.0: reasons.append("Under-temperature")
+        if data.vibration > 1.8: reasons.append("High vibration")
+        elif data.vibration < 0.6: reasons.append("Low vibration")
+        
+        if not reasons: reasons.append("Unusual Temp/Vib ratio")
+        reason_text = " + ".join(reasons)
+
     # Save prediction to database
     new_prediction = models.PredictionRecord(
         machine_id = data.machine_id,
         timestamp = data.timestamp,
         temperature = data.temperature,
         vibration = data.vibration,
-        is_anomaly = is_anomaly
+        is_anomaly = is_anomaly,
+        reason = reason_text
     )
 
     db.add(new_prediction)
     db.commit()
     db.refresh(new_prediction)
 
-    # Determine the reason for the anomaly
-    reason = ""
-    if is_anomaly:
-        reasons = []
-        if data.temperature > 60.0:
-            reasons.append("Overheating")
-        elif data.temperature < 30.0:
-            reasons.append("Under-temperature")
-            
-        if data.vibration > 1.8:
-            reasons.append("High vibration")
-        elif data.vibration < 0.6:
-            reasons.append("Low vibration")
+    status_print = f"🔴 ANOMALIE ➔ {reason_text}" if is_anomaly else "🟢 NORMAL"
+    print(f"[IA] {data.machine_id} | Temp: {data.temperature}°C | Vib: {data.vibration}mm/s | Status: {status_print}")
 
-        # If no extreme threshold is crossed, it's because the combination of the two is strange
-        if not reasons:
-            reasons.append("Unusual Temp/Vib ratio")
-            
-        reason = f" ➔ Cause : {' + '.join(reasons)}"
-
-    # Draw result to console in order to follow the prediction
-    status = f"ANOMALY DETECTED{reason}" if is_anomaly else "NORMAL"
-    print(f"[IA] {data.machine_id} | Temp: {data.temperature}°C | Vib: {data.vibration}mm/s | Status: {status}")
-
-    return {
-        "status": "saved", 
-        "is_anomaly": is_anomaly, 
-        "method": "ai_isolation_forest",
-        "reason": reason.replace(" ➔ Cause : ", "") if reason else "Normal"
-    }
+    return {"status": "saved", "is_anomaly": is_anomaly, "reason": reason_text}
 
 @app.get("/history")
 def get_history(db: Session = Depends(get_db)):
