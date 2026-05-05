@@ -13,8 +13,7 @@
 
 This project simulates a smart factory environment where sensors (Temperature & Vibration) stream continuous data. A Machine Learning model analyzes this data stream to predict equipment failures before they happen, displayed on an interactive, real-time control tower.
 
-### 📸 Dashboard Preview
-*(Replace the line below with your actual screenshot path)*
+### 📸 Dashboard Preview
 <img width="1830" height="714" alt="capture 1" src="https://github.com/user-attachments/assets/56b75fad-d13d-4420-b47d-cd2d840d011e" />
 <img width="1789" height="815" alt="capture 2" src="https://github.com/user-attachments/assets/c2e44d51-01d6-41f1-9b97-20f3326d55d5" />
 
